@@ -1,0 +1,121 @@
+:root {
+  /* ── Brand / Gold ──────────────────────────────────────── */
+  --color-brand-50:  #FFF9F0;
+  --color-brand-100: #FFF0D6;
+  --color-brand-200: #FFD999;
+  --color-brand-300: #FFC15E;
+  --color-brand-400: #FFAA2C;
+  --color-brand-500: #F59500;   /* Primary CTA */
+  --color-brand-600: #CC7A00;
+  --color-brand-700: #A36000;
+  --color-brand-800: #7A4700;
+  --color-brand-900: #522F00;
+
+  /* ── Surfaces (dark-first) ─────────────────────────────── */
+  --color-surface:        #0F0E0D;
+  --color-surface-card:   #1A1916;
+  --color-surface-raised: #252320;
+  --color-surface-border: #2E2C28;
+  --color-surface-muted:  #3D3A34;
+
+  /* ── Ink ───────────────────────────────────────────────── */
+  --color-ink-primary:   #F5F2EC;
+  --color-ink-secondary: #B8B3A8;
+  --color-ink-muted:     #7A7570;
+  --color-ink-disabled:  #4A4742;
+
+  /* ── Accents ───────────────────────────────────────────── */
+  --color-accent-rose:  #F43F5E;
+  --color-accent-teal:  #14B8A6;
+  --color-accent-amber: #F59E0B;
+
+  /* ── Semantic ──────────────────────────────────────────── */
+  --color-success: #22C55E;
+  --color-warning: #EAB308;
+  --color-error:   #EF4444;
+  --color-info:    #3B82F6;
+
+  /* ── Typography ────────────────────────────────────────── */
+  --font-display: var(--font-playfair), Georgia, serif;
+  --font-body:    var(--font-dm-sans), system-ui, sans-serif;
+  --font-mono:    var(--font-dm-mono), monospace;
+
+  /* Type scale */
+  --text-xs:   0.75rem;    /* 12px */
+  --text-sm:   0.875rem;   /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg:   1.125rem;   /* 18px */
+  --text-xl:   1.25rem;    /* 20px */
+  --text-2xl:  1.5rem;     /* 24px */
+  --text-3xl:  1.875rem;   /* 30px */
+  --text-4xl:  2.25rem;    /* 36px */
+  --text-5xl:  3rem;       /* 48px */
+  --text-6xl:  3.75rem;    /* 60px */
+  --text-7xl:  4.5rem;     /* 72px */
+
+  /* Line heights */
+  --leading-tight:  1.2;
+  --leading-snug:   1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed:1.65;
+
+  /* ── Spacing ───────────────────────────────────────────── */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  /* ── Border radius ─────────────────────────────────────── */
+  --radius-sm:   0.25rem;
+  --radius-md:   0.5rem;
+  --radius-lg:   0.75rem;
+  --radius-xl:   1rem;
+  --radius-2xl:  1.25rem;
+  --radius-3xl:  1.5rem;
+  --radius-full: 9999px;
+
+  /* ── Shadows ───────────────────────────────────────────── */
+  --shadow-sm:       0 1px 4px rgba(0,0,0,0.3);
+  --shadow-md:       0 2px 16px rgba(0,0,0,0.4);
+  --shadow-lg:       0 8px 40px rgba(0,0,0,0.6);
+  --shadow-glow-gold:0 0 24px rgba(245,149,0,0.25);
+  --shadow-glow-rose:0 0 24px rgba(244,63,94,0.2);
+
+  /* ── Transitions ───────────────────────────────────────── */
+  --ease-spring:  cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-smooth:  cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast:   150ms;
+  --duration-base:   250ms;
+  --duration-slow:   400ms;
+
+  /* ── Z-index scale ─────────────────────────────────────── */
+  --z-base:    0;
+  --z-raised:  10;
+  --z-dropdown:100;
+  --z-sticky:  200;
+  --z-overlay: 300;
+  --z-modal:   400;
+  --z-toast:   500;
+
+  /* ── Layout ────────────────────────────────────────────── */
+  --container-sm:  640px;
+  --container-md:  768px;
+  --container-lg:  1024px;
+  --container-xl:  1280px;
+  --container-2xl: 1440px;
+  --navbar-height: 4rem;
+}
+
+/* ── Utility aliases ──────────────────────────────────────── */
+.text-brand   { color: var(--color-brand-500); }
+.bg-brand     { background-color: var(--color-brand-500); }
+.border-brand { border-color: var(--color-brand-500); }
