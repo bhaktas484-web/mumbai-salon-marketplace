@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, DM_Sans, DM_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+// Ignore missing type declarations for CSS side-effect import in this file
+// @ts-ignore
 import "../styles/globals.css";
 /* ── Fonts ──────────────────────────────────────────────── */
 const playfair = Playfair_Display({
@@ -62,7 +64,6 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico" },
-      { url: "/icon-16.png", sizes: "16x16", type: "image/png" },
       { url: "/icon-32.png", sizes: "32x32", type: "image/png" },
     ],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],

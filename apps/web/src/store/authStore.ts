@@ -13,7 +13,7 @@ interface AuthStore extends AuthState {
 export const useAuthStore = create<AuthStore>()(
   devtools(
     persist(
-      (set, get) => ({
+      (set) => ({
         user:            null,
         isAuthenticated: false,
         isLoading:       false,

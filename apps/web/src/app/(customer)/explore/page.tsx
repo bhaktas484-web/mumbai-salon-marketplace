@@ -28,7 +28,7 @@ export default function ExplorePage() {
   const searchParams = useSearchParams();
   const [filters, setFilters]       = useState<SalonFilters>({});
   const [viewMode, setViewMode]     = useState<"grid" | "list">("grid");
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [, setFiltersOpen] = useState(false);
 
   /* Sync filters from URL */
   useEffect(() => {

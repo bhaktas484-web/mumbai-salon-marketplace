@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MapPin, Clock, BadgeCheck, Zap } from "lucide-react";
+import { Heart, MapPin, BadgeCheck, Zap } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";

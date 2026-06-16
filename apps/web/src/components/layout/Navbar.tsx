@@ -17,7 +17,7 @@ const NAV_LINKS = [
 export function Navbar() {
   const [scrolled,     setScrolled]     = useState(false);
   const [mobileOpen,   setMobileOpen]   = useState(false);
-  const [area,         setArea]         = useState("Mumbai");
+  const [area]         = useState("Mumbai");
   const pathname = usePathname();
 
   /* Scroll detection */
