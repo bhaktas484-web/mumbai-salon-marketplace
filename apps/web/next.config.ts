@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  typedRoutes: true,
   /* ── Images ─────────────────────────────────────────────── */
   images: {
     formats: ["image/avif", "image/webp"],
@@ -22,6 +23,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
       },
+      
       {
         protocol: "https",
         hostname: "storage.googleapis.com",
@@ -118,7 +120,7 @@ const nextConfig: NextConfig = {
       "@radix-ui/react-tabs",
       "framer-motion",
     ],
-    typedRoutes: true,
+    
   },
 
   /* ── Misc ───────────────────────────────────────────────── */

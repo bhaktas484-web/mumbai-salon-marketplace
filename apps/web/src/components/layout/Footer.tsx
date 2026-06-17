@@ -1,141 +1,105 @@
 import Link from "next/link";
-import { Scissors, Instagram, Twitter, Facebook, Youtube } from "lucide-react";
 
-const AREAS = ["Bandra","Juhu","Andheri","Colaba","Worli","Lower Parel","Powai","Malad","Dadar","Santacruz"];
-const SERVICES = ["Hair","Skin & Facial","Nails","Makeup","Spa & Massage","Bridal","Threading & Waxing","Beard & Grooming"];
-const COMPANY = [
-  { label: "About Us",        href: "/about" },
-  { label: "For Salon Owners",href: "/partners" },
-  { label: "Blog",            href: "/blog" },
-  { label: "Careers",         href: "/careers" },
-  { label: "Press",           href: "/press" },
-  { label: "Contact",         href: "/contact" },
-];
-const LEGAL = [
-  { label: "Privacy Policy",   href: "/privacy" },
-  { label: "Terms of Service", href: "/terms" },
-  { label: "Cookie Policy",    href: "/cookies" },
-  { label: "Refund Policy",    href: "/refunds" },
-];
-const SOCIAL = [
-  { icon: Instagram, href: "https://instagram.com/glamrin", label: "Instagram" },
-  { icon: Twitter,   href: "https://twitter.com/glamrin",   label: "Twitter" },
-  { icon: Facebook,  href: "https://facebook.com/glamrin",  label: "Facebook" },
-  { icon: Youtube,   href: "https://youtube.com/@glamrin",  label: "YouTube" },
+const AREAS    = ["Bandra","Juhu","Colaba","Worli","Andheri","Lower Parel","Powai","Malad"];
+const SERVICES = ["Hair","Skin & Facial","Nails","Makeup","Spa & Massage","Bridal","Waxing","Men's Grooming"];
+const COMPANY  = [
+  { label:"About Us",         href:"/about"    },
+  { label:"For Salon Owners", href:"/partners" },
+  { label:"Blog",             href:"/blog"     },
+  { label:"Careers",          href:"/careers"  },
+  { label:"Contact",          href:"/contact"  },
 ];
 
 export function Footer() {
   return (
-    <footer className="border-t border-surface-border bg-surface-card mt-24">
-      <div className="container-app py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8">
+    <footer style={{ borderTop:"1px solid var(--border)", background:"var(--surface-2)" }}>
+      <div className="container" style={{ paddingTop:48, paddingBottom:28 }}>
 
-          {/* ── Brand col ────────────────────────────────── */}
-          <div className="lg:col-span-2 space-y-5">
-            <Link href="/" className="flex items-center gap-2 w-fit group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-brand flex items-center justify-center">
-                <Scissors size={18} className="text-black rotate-45" />
-              </div>
-              <span className="font-display font-bold text-2xl">
-                Glam<span className="text-gradient-gold">r</span>
+        {/* Top grid */}
+        <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:48, marginBottom:40 }}>
+
+          {/* Brand */}
+          <div>
+            <Link href="/" style={{ display:"flex", alignItems:"center", gap:10, textDecoration:"none", marginBottom:14 }}>
+              <div style={{
+                width:30, height:30, borderRadius:8, background:"var(--gold)",
+                display:"flex", alignItems:"center", justifyContent:"center",
+                fontSize:14, transform:"rotate(-10deg)"
+              }}>✂</div>
+              <span style={{ fontFamily:"var(--font-display)", fontWeight:800, fontSize:18, color:"var(--text-1)" }}>
+                Glam<span style={{ color:"var(--gold)" }}>r</span>
               </span>
             </Link>
-
-            <p className="text-sm text-ink-muted leading-relaxed max-w-xs">
-              Mumbai&apos;s premier salon marketplace. Book top-rated salons and beauty studios 
-              across the city — instantly, reliably, beautifully.
+            <p style={{ fontSize:13, color:"var(--text-3)", lineHeight:1.7, maxWidth:260, marginBottom:20 }}>
+              Mumbai&apos;s premier salon marketplace. Book top-rated salons instantly, reliably, beautifully.
             </p>
-
-            {/* Social icons */}
-            <div className="flex items-center gap-3">
-              {SOCIAL.map(({ icon: Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="w-9 h-9 rounded-xl bg-surface-raised border border-surface-border flex items-center justify-center text-ink-muted hover:text-brand-500 hover:border-brand-500/50 transition-all duration-150"
-                >
-                  <Icon size={16} />
-                </a>
+            <div style={{ display:"flex", gap:8 }}>
+              {["📸","🐦","📘","▶️"].map((icon, i) => (
+                <div key={i} style={{
+                  width:34, height:34, borderRadius:8,
+                  border:"1px solid var(--border-2)",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  fontSize:15, cursor:"pointer"
+                }}>{icon}</div>
               ))}
             </div>
+          </div>
 
-            {/* App download badges */}
-            <div className="flex items-center gap-3 pt-1">
-              <a href="#" className="px-4 py-2.5 rounded-xl bg-surface-raised border border-surface-border text-xs font-medium text-ink-secondary hover:border-brand-500/40 hover:text-ink-primary transition-all">
-                📱 iOS App
-              </a>
-              <a href="#" className="px-4 py-2.5 rounded-xl bg-surface-raised border border-surface-border text-xs font-medium text-ink-secondary hover:border-brand-500/40 hover:text-ink-primary transition-all">
-                🤖 Android App
-              </a>
+          {/* Explore */}
+          <div>
+            <div style={{ fontSize:11, textTransform:"uppercase", letterSpacing:"0.09em", color:"var(--text-3)", fontWeight:600, marginBottom:16 }}>
+              Explore
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              {AREAS.map(a => (
+                <Link key={a} href={`/explore?area=${a}`} style={{ fontSize:13, color:"var(--text-2)", textDecoration:"none" }}>
+                  {a} Salons
+                </Link>
+              ))}
             </div>
           </div>
 
-          {/* ── Explore by area ───────────────────────────── */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-ink-primary">Explore by Area</h4>
-            <ul className="space-y-2.5">
-              {AREAS.map((area) => (
-                <li key={area}>
-                  <Link
-                    href={`/explore?area=${area}`}
-                    className="text-sm text-ink-muted hover:text-brand-400 transition-colors"
-                  >
-                    Salons in {area}
-                  </Link>
-                </li>
+          {/* Services */}
+          <div>
+            <div style={{ fontSize:11, textTransform:"uppercase", letterSpacing:"0.09em", color:"var(--text-3)", fontWeight:600, marginBottom:16 }}>
+              Services
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              {SERVICES.map(s => (
+                <Link key={s} href={`/explore?category=${encodeURIComponent(s)}`} style={{ fontSize:13, color:"var(--text-2)", textDecoration:"none" }}>
+                  {s}
+                </Link>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* ── Services ──────────────────────────────────── */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-ink-primary">Services</h4>
-            <ul className="space-y-2.5">
-              {SERVICES.map((s) => (
-                <li key={s}>
-                  <Link
-                    href={`/explore?category=${encodeURIComponent(s)}`}
-                    className="text-sm text-ink-muted hover:text-brand-400 transition-colors"
-                  >
-                    {s}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* ── Company ───────────────────────────────────── */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-ink-primary">Company</h4>
-            <ul className="space-y-2.5">
+          {/* Company */}
+          <div>
+            <div style={{ fontSize:11, textTransform:"uppercase", letterSpacing:"0.09em", color:"var(--text-3)", fontWeight:600, marginBottom:16 }}>
+              Company
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
               {COMPANY.map(({ label, href }) => (
-                <li key={label}>
-                  <Link
-                    href={href}
-                    className="text-sm text-ink-muted hover:text-brand-400 transition-colors"
-                  >
-                    {label}
-                  </Link>
-                </li>
+                <Link key={label} href={href} style={{ fontSize:13, color:"var(--text-2)", textDecoration:"none" }}>
+                  {label}
+                </Link>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ── Bottom bar ────────────────────────────────────── */}
-      <div className="border-t border-surface-border">
-        <div className="container-app py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-ink-disabled text-center sm:text-left">
+        {/* Bottom bar */}
+        <div style={{
+          borderTop:"1px solid var(--border)", paddingTop:24,
+          display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12
+        }}>
+          <span style={{ fontSize:12, color:"var(--text-3)" }}>
             © {new Date().getFullYear()} Glamr Technologies Pvt. Ltd. · Made with ❤️ in Mumbai
-          </p>
-          <div className="flex items-center gap-5">
-            {LEGAL.map(({ label, href }) => (
-              <Link key={label} href={href} className="text-xs text-ink-disabled hover:text-ink-muted transition-colors">
-                {label}
+          </span>
+          <div style={{ display:"flex", gap:20 }}>
+            {["Privacy","Terms","Refunds"].map(l => (
+              <Link key={l} href={`/${l.toLowerCase()}`} style={{ fontSize:12, color:"var(--text-3)", textDecoration:"none" }}>
+                {l}
               </Link>
             ))}
           </div>
