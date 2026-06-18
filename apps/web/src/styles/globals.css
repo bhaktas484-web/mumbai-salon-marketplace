@@ -1,7 +1,9 @@
+/* stylelint-disable at-rule-no-unknown -- allow Tailwind directives */
 @import "./tokens.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
 
 /* ── Base reset & defaults ────────────────────────────────── */
 @layer base {
@@ -234,6 +236,7 @@ user-select: none;    border: 1px solid transparent;
 
   .glass {
     background: rgba(26, 25, 22, 0.75);
+    
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255,255,255,0.06);
