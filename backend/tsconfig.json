@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    /* ── Language ──────────────────────────────── */
+    "target":    "ES2022",
+    "lib":       ["ES2022"],
+    "module":    "CommonJS",
+    "moduleResolution": "node",
+
+    /* ── Emit ──────────────────────────────────── */
+    "outDir":    "./dist",
+    "rootDir":   "./src",
+    "sourceMap": true,
+    "declaration": true,
+
+    /* ── Strict ────────────────────────────────── */
+    "strict":                       true,
+    "noImplicitAny":                true,
+    "strictNullChecks":             true,
+    "strictFunctionTypes":          true,
+    "noImplicitReturns":            true,
+    "noUnusedLocals":               true,
+    "noUnusedParameters":           true,
+    "noFallthroughCasesInSwitch":   true,
+    "noUncheckedIndexedAccess":     true,
+
+    /* ── Interop ───────────────────────────────── */
+    "esModuleInterop":              true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule":            true,
+    "skipLibCheck":                 true,
+
+    /* ── Path aliases ──────────────────────────── */
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@/*":        ["./src/*"],
+      "@/modules/*":["./src/modules/*"],
+      "@/config/*": ["./src/config/*"],
+      "@/utils/*":  ["./src/utils/*"],
+      "@/middleware/*": ["./src/middleware/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
