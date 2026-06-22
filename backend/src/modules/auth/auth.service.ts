@@ -1,3 +1,4 @@
+import mongoose from "mongoose"; // ✅ Fixed: moved to top (was at bottom, used before declaration)
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { User, type IUser } from "./user.model";
@@ -246,5 +247,3 @@ export async function toggleFavourite(userId: string, salonId: string) {
 
   return { isFavourited: !isFavourited };
 }
-
-import mongoose from "mongoose";
