@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 import { AppError } from "../utils/AppError";
-import { User } from "../modules/auth/user.model.ts";
+import { User } from "../modules/auth/user.model"; // ✅ Fixed: removed ".ts" extension
 
 /* ── Extend Express Request ──────────────────────────── */
 declare global {
