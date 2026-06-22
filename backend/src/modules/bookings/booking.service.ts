@@ -87,8 +87,8 @@ export async function createBooking(dto: {
     durationMinutes: s.durationMinutes,
   }));
 
-  const totalDuration = items.reduce((sum, i) => sum + i.durationMinutes, 0);
-  const subtotal      = items.reduce((sum, i) => sum + i.price, 0);
+  const totalDuration = items.reduce((sum: number, i) => sum + i.durationMinutes, 0);
+  const subtotal      = items.reduce((sum: number, i: any) => sum + i.price, 0);
 
   /* 4. Coupon discount (simple 10% if code = GLAMR10) */
   let discountAmount = 0;
