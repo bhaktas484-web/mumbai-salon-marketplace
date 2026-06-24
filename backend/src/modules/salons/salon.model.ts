@@ -195,7 +195,7 @@ const salonSchema = new Schema<ISalon>(
 
     bankDetails: {
       accountName:   String,
-      accountNumber: { type: String, select: false },
+      accountNumber: { type: String },
       ifscCode:      String,
       bankName:      String,
     },
