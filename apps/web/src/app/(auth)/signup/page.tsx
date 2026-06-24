@@ -9,10 +9,10 @@ import { Input }  from "@/components/ui/Input";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [form, setForm]       = useState({ name:"", email:"", phone:"", password:"" });
-  const [showPass, setShowPass]= useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState<string | null>(null);
+  const [form, setForm]        = useState({ name:"", email:"", phone:"", password:"" });
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading]  = useState(false);
+  const [error, setError]      = useState<string | null>(null);
 
   const set = (k: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -47,12 +47,10 @@ export default function SignupPage() {
         return;
       }
 
-      // Store token in localStorage
       if (data.data?.accessToken) {
         localStorage.setItem("accessToken", data.data.accessToken);
       }
 
-      // Redirect to home
       router.push("/");
     } catch {
       setError("Network error. Make sure the backend is running.");
@@ -86,7 +84,6 @@ export default function SignupPage() {
             <div className="flex-1 h-px bg-surface-border" />
           </div>
 
-          {/* Error message */}
           {error && (
             <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
               {error}
@@ -124,7 +121,7 @@ export default function SignupPage() {
               type={showPass ? "text" : "password"}
               value={form.password}
               onChange={set("password")}
-              placeholder="Min. 8 characters, 1 uppercase, 1 number"
+              placeholder="Min. 8 characters"
               required
               rightIcon={showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
               onRightIconClick={() => setShowPass(p => !p)}
