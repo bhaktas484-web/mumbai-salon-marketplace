@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  typedRoutes: true,
   /* ── Images ─────────────────────────────────────────────── */
   images: {
     formats: ["image/avif", "image/webp"],
@@ -17,13 +16,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "lh3.googleusercontent.com", // Google OAuth avatars
+        hostname: "lh3.googleusercontent.com",
       },
       {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
       },
-      
       {
         protocol: "https",
         hostname: "storage.googleapis.com",
@@ -47,10 +45,10 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
-          { key: "X-Frame-Options",           value: "DENY" },
-          { key: "X-Content-Type-Options",     value: "nosniff" },
-          { key: "Referrer-Policy",            value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy",         value: "camera=(), microphone=(), geolocation=(self)" },
+          { key: "X-Frame-Options",       value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy",        value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy",     value: "camera=(), microphone=(), geolocation=(self)" },
           {
             key: "Content-Security-Policy",
             value: [
@@ -59,21 +57,19 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://lh3.googleusercontent.com https://storage.googleapis.com https://maps.gstatic.com https://maps.googleapis.com",
-              "connect-src 'self' https://api.glamr.in https://maps.googleapis.com https://api.razorpay.com",
+              "connect-src 'self' http://localhost:5000 https://api.glamr.in https://maps.googleapis.com https://api.razorpay.com",
               "frame-src https://checkout.razorpay.com https://api.razorpay.com",
             ].join("; "),
           },
         ],
       },
       {
-        // Cache static assets aggressively
         source: "/(_next/static|fonts|icons)/(.*)",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
       {
-        // Cache images for 7 days
         source: "/(images|og-image.jpg|apple-touch-icon.png)(.*)",
         headers: [
           { key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=86400" },
@@ -105,7 +101,7 @@ const nextConfig: NextConfig = {
         source: "/api/:path*",
         destination:
           process.env.NODE_ENV === "development"
-            ? "http://localhost:5000/api/:path*"
+            ? "http://localhost:5000/api/:path*"  // ✅ Fixed: was 4000
             : "https://api.glamr.in/api/:path*",
       },
     ];
@@ -113,6 +109,7 @@ const nextConfig: NextConfig = {
 
   /* ── Experimental ───────────────────────────────────────── */
   experimental: {
+    typedRoutes: true,              // ✅ Fixed: moved here from top level
     optimizePackageImports: [
       "lucide-react",
       "@radix-ui/react-dialog",
@@ -120,14 +117,13 @@ const nextConfig: NextConfig = {
       "@radix-ui/react-tabs",
       "framer-motion",
     ],
-    
   },
 
   /* ── Misc ───────────────────────────────────────────────── */
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,
-  output: "standalone", // For Docker deployment
+  output: "standalone",
 };
 
 export default nextConfig;

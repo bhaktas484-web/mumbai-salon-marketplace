@@ -1,33 +1,64 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff, Scissors, Phone } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input }  from "@/components/ui/Input";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [form, setForm]       = useState({ name:"", email:"", phone:"", password:"" });
   const [showPass, setShowPass]= useState(false);
   const [loading, setLoading] = useState(false);
-  const [step, setStep]       = useState<"form"|"otp">("form");
-  const [otp, setOtp]         = useState(["","","","","",""]);
+  const [error, setError]     = useState<string | null>(null);
 
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm(p => ({...p, [k]: e.target.value}));
+  const set = (k: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm(p => ({ ...p, [k]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1000));
-    setLoading(false);
-    setStep("otp");
-  };
 
-  const handleOtpChange = (i: number, val: string) => {
-    if (!/^\d?$/.test(val)) return;
-    const next = [...otp]; next[i] = val;
-    setOtp(next);
-    if (val && i < 5) (document.getElementById(`otp-${i+1}`) as HTMLInputElement)?.focus();
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name:     form.name,
+          email:    form.email,
+          password: form.password,
+          phone:    form.phone || undefined,
+          role:     "customer",
+        }),
+      });
+
+      const data = await res.json() as {
+        success: boolean;
+        message?: string;
+        data?: { accessToken: string; user: Record<string, unknown> };
+      };
+
+      if (!res.ok || !data.success) {
+        setError(data.message ?? "Signup failed. Please try again.");
+        return;
+      }
+
+      // Store token in localStorage
+      if (data.data?.accessToken) {
+        localStorage.setItem("accessToken", data.data.accessToken);
+      }
+
+      // Redirect to home
+      router.push("/");
+    } catch {
+      setError("Network error. Make sure the backend is running.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -42,85 +73,80 @@ export default function SignupPage() {
         </Link>
 
         <div className="max-w-sm w-full">
-          {step === "form" ? (
-            <>
-              <h1 className="font-display font-black text-3xl mb-2">Create account</h1>
-              <p className="text-ink-muted mb-8">Join 50,000+ Mumbaikars on Glamr</p>
+          <h1 className="font-display font-black text-3xl mb-2">Create account</h1>
+          <p className="text-ink-muted mb-8">Join 50,000+ Mumbaikars on Glamr</p>
 
-              <button className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-surface-border bg-surface-raised hover:border-surface-muted transition-all text-sm font-medium text-ink-secondary mb-6">
-                <GoogleIcon /> Continue with Google
-              </button>
+          <button className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-surface-border bg-surface-raised hover:border-surface-muted transition-all text-sm font-medium text-ink-secondary mb-6">
+            <GoogleIcon /> Continue with Google
+          </button>
 
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex-1 h-px bg-surface-border" />
-                <span className="text-xs text-ink-disabled">or</span>
-                <div className="flex-1 h-px bg-surface-border" />
-              </div>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex-1 h-px bg-surface-border" />
+            <span className="text-xs text-ink-disabled">or</span>
+            <div className="flex-1 h-px bg-surface-border" />
+          </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <Input label="Full Name" value={form.name} onChange={set("name")} placeholder="Priya Shah" required />
-                <Input label="Email" type="email" value={form.email} onChange={set("email")} placeholder="priya@gmail.com" required autoComplete="email" />
-                <Input label="Phone (optional)" type="tel" value={form.phone} onChange={set("phone")} placeholder="+91 98200 00000" leftIcon={<Phone size={15} />} hint="For appointment reminders via SMS" />
-                <Input
-                  label="Password" type={showPass?"text":"password"}
-                  value={form.password} onChange={set("password")}
-                  placeholder="Min. 8 characters" required
-                  rightIcon={showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
-                  onRightIconClick={() => setShowPass(p=>!p)}
-                />
-
-                <p className="text-xs text-ink-muted">
-                  By signing up, you agree to our{" "}
-                  <Link href="/terms" className="text-brand-400 hover:underline">Terms</Link>
-                  {" "}and{" "}
-                  <Link href="/privacy" className="text-brand-400 hover:underline">Privacy Policy</Link>.
-                </p>
-
-                <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full">
-                  Create Account
-                </Button>
-              </form>
-            </>
-          ) : (
-            <>
-              <div className="text-4xl mb-4">📱</div>
-              <h1 className="font-display font-black text-3xl mb-2">Verify your email</h1>
-              <p className="text-ink-muted mb-8">
-                We sent a 6-digit code to <span className="text-ink-primary font-medium">{form.email}</span>
-              </p>
-
-              <div className="flex gap-2 justify-between mb-6">
-                {otp.map((digit, i) => (
-                  <input
-                    key={i}
-                    id={`otp-${i}`}
-                     aria-label={`OTP digit ${i + 1}`}
-                    value={digit}
-                    onChange={e => handleOtpChange(i, e.target.value)}
-                    maxLength={1}
-                    className="w-12 h-14 text-center text-xl font-bold bg-surface-raised border border-surface-border rounded-xl text-ink-primary focus:border-brand-500 focus:ring-2 focus:ring-brand-500/12 outline-none transition-all"
-                  />
-                ))}
-              </div>
-
-              <Button variant="primary" size="lg" className="w-full" onClick={() => {}}>
-                Verify & Continue
-              </Button>
-
-              <button onClick={() => setStep("form")} className="w-full mt-3 text-sm text-ink-muted hover:text-ink-primary transition-colors">
-                ← Go back
-              </button>
-
-              <p className="text-sm text-center text-ink-muted mt-4">
-                Didn&apos;t get it?{" "}
-                <button className="text-brand-400 hover:text-brand-300 font-medium">Resend code</button>
-              </p>
-            </>
+          {/* Error message */}
+          {error && (
+            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              {error}
+            </div>
           )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="Full Name"
+              value={form.name}
+              onChange={set("name")}
+              placeholder="Priya Shah"
+              required
+            />
+            <Input
+              label="Email"
+              type="email"
+              value={form.email}
+              onChange={set("email")}
+              placeholder="priya@gmail.com"
+              required
+              autoComplete="email"
+            />
+            <Input
+              label="Phone (optional)"
+              type="tel"
+              value={form.phone}
+              onChange={set("phone")}
+              placeholder="+91 98200 00000"
+              leftIcon={<Phone size={15} />}
+              hint="For appointment reminders via SMS"
+            />
+            <Input
+              label="Password"
+              type={showPass ? "text" : "password"}
+              value={form.password}
+              onChange={set("password")}
+              placeholder="Min. 8 characters, 1 uppercase, 1 number"
+              required
+              rightIcon={showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
+              onRightIconClick={() => setShowPass(p => !p)}
+            />
+
+            <p className="text-xs text-ink-muted">
+              By signing up, you agree to our{" "}
+              <Link href="/terms" className="text-brand-400 hover:underline">Terms</Link>
+              {" "}and{" "}
+              <Link href="/privacy" className="text-brand-400 hover:underline">Privacy Policy</Link>.
+            </p>
+
+            <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full">
+              Create Account
+            </Button>
+          </form>
 
           <p className="text-sm text-ink-muted text-center mt-6">
             Already have an account?{" "}
-            <Link href="/login" className="text-brand-400 font-medium hover:text-brand-300 transition-colors">Sign in</Link>
+            <Link href="/login" className="text-brand-400 font-medium hover:text-brand-300 transition-colors">
+              Sign in
+            </Link>
           </p>
         </div>
       </div>
