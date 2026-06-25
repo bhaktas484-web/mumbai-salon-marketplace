@@ -10,13 +10,6 @@ interface AuthStore extends AuthState {
   refresh: ()               => Promise<void>;
 }
 
-/* Backend wraps all responses as { success, data: { user, accessToken } } */
-interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
-  data?: T;
-}
-
 export const useAuthStore = create<AuthStore>()(
   devtools(
     persist(
@@ -29,15 +22,18 @@ export const useAuthStore = create<AuthStore>()(
         login: async (dto) => {
           set({ isLoading: true });
           try {
-            const res = await fetch("/api/auth/login", {
+            const res  = await fetch("/api/auth/login", {
               method:  "POST",
               headers: { "Content-Type": "application/json" },
               body:    JSON.stringify(dto),
             });
-            const json = await res.json() as ApiResponse<{ user: User; accessToken: string }>;
+            const json = await res.json() as {
+              success: boolean;
+              message?: string;
+              data?: { user: User; accessToken: string };
+            };
             if (!res.ok || !json.success) throw new Error(json.message ?? "Invalid credentials");
-            const { user, accessToken } = json.data!;
-            set({ user, accessToken, isAuthenticated: true });
+            set({ user: json.data!.user, accessToken: json.data!.accessToken, isAuthenticated: true });
           } finally {
             set({ isLoading: false });
           }
@@ -46,24 +42,25 @@ export const useAuthStore = create<AuthStore>()(
         signup: async (dto) => {
           set({ isLoading: true });
           try {
-            const res = await fetch("/api/auth/signup", {
+            const res  = await fetch("/api/auth/signup", {
               method:  "POST",
               headers: { "Content-Type": "application/json" },
               body:    JSON.stringify(dto),
             });
-            const json = await res.json() as ApiResponse<{ user: User; accessToken: string }>;
+            const json = await res.json() as {
+              success: boolean;
+              message?: string;
+              data?: { user: User; accessToken: string };
+            };
             if (!res.ok || !json.success) throw new Error(json.message ?? "Signup failed");
-            const { user, accessToken } = json.data!;
-            set({ user, accessToken, isAuthenticated: true });
+            set({ user: json.data!.user, accessToken: json.data!.accessToken, isAuthenticated: true });
           } finally {
             set({ isLoading: false });
           }
         },
 
         logout: async () => {
-          try {
-            await fetch("/api/auth/logout", { method: "POST" });
-          } catch { /* noop */ }
+          try { await fetch("/api/auth/logout", { method: "POST" }); } catch { /* noop */ }
           set({ user: null, accessToken: null, isAuthenticated: false });
         },
 
@@ -72,7 +69,10 @@ export const useAuthStore = create<AuthStore>()(
         refresh: async () => {
           try {
             const res  = await fetch("/api/auth/refresh", { method: "POST" });
-            const json = await res.json() as ApiResponse<{ accessToken: string }>;
+            const json = await res.json() as {
+              success: boolean;
+              data?: { accessToken: string };
+            };
             if (!res.ok || !json.success) {
               set({ user: null, accessToken: null, isAuthenticated: false });
               return;

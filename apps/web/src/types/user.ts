@@ -78,5 +78,5 @@ export interface AuthResponse {
 export interface CustomerProfile extends User {
   recentBookings: Booking[];
   favouriteSalons: string[];      // salon IDs
-  pendingReviews: string[];        // booking IDs awaiting review
+  pendingReviews: string[];        // bookin  g IDs awaiting review
 }
