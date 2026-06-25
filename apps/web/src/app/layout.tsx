@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, DM_Sans, DM_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
-// Ignore missing type declarations for CSS side-effect import in this file
-// @ts-ignore
-import "../styles/globals.css";
+import "@/styles/globals.css";
+
 /* ── Fonts ──────────────────────────────────────────────── */
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -44,7 +43,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Glamr" }],
   creator: "Glamr Technologies Pvt. Ltd.",
-  metadataBase: new URL("https://glamr.in"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://glamr.in"
+  ),
   openGraph: {
     type: "website",
     locale: "en_IN",
