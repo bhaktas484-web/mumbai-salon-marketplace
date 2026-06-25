@@ -1,12 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    /* ── Language & Environment ─────────────────────────── */
     "target": "ES2022",
     "lib": ["dom", "dom.iterable", "ES2022"],
     "jsx": "preserve",
 
-    /* ── Module resolution ──────────────────────────────── */
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -14,11 +12,9 @@
     "moduleDetection": "force",
     "allowJs": true,
 
-    /* ── Emit ───────────────────────────────────────────── */
     "noEmit": true,
     "incremental": false,
 
-    /* ── Strict type checking ───────────────────────────── */
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -26,43 +22,48 @@
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
-    "noUncheckedIndexedAccess": false,
     "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "exactOptionalPropertyTypes": false,
     "noFallthroughCasesInSwitch": true,
 
-    /* ── Interop ────────────────────────────────────────── */
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "skipLibCheck": true,
 
-    /* ── Plugins ────────────────────────────────────────── */
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
 
-    /* ── Path aliases ───────────────────────────────────── */
     "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
+
+    // "ignoreDeprecations": "5.9.3",
+
     "paths": {
-      "@/*":            ["./src/*"],
+      "@/*": ["./src/*"],
       "@/components/*": ["./src/components/*"],
-      "@/app/*":        ["./src/app/*"],
-      "@/lib/*":        ["./src/lib/*"],
-      "@/hooks/*":      ["./src/hooks/*"],
-      "@/store/*":      ["./src/store/*"],
-      "@/styles/*":     ["./src/styles/*"],
-      "@/types/*":      ["./src/types/*"],
-      "@/utils/*":      ["./src/lib/utils/*"]
+      "@/app/*": ["./src/app/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/store/*": ["./src/store/*"],
+      "@/styles/*": ["./src/styles/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/utils/*": ["./src/lib/utils/*"]
     }
   },
+
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
+
   "exclude": [
     "node_modules",
     ".next",

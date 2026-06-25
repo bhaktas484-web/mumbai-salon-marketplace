@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, DM_Sans, DM_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
-import "@/styles/globals.css";
+import "../styles/globals.css";
 
 /* ── Fonts ──────────────────────────────────────────────── */
 const playfair = Playfair_Display({
