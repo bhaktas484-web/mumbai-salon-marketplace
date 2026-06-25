@@ -82,9 +82,16 @@ export function useSalons({
       if (!json.success || !json.data) throw new Error(json.message ?? "Failed to load salons");
 
       const { salons: newSalons, total: newTotal } = json.data;
-      setSalons((prev) => (append ? [...prev, ...newSalons] : newSalons));
-      setTotal(newTotal);
-      setHasMore(newSalons.length === pageSize);
+
+      // ✅ Fix: ensure newSalons is always a safe array before spreading
+      const safeSalons = Array.isArray(newSalons) ? newSalons : [];
+
+      setSalons((prev) =>
+        // ✅ Fix: ensure prev is also a safe array (guards against undefined state)
+        append ? [...(Array.isArray(prev) ? prev : []), ...safeSalons] : safeSalons
+      );
+      setTotal(newTotal ?? 0);  // ✅ Fix: fallback to 0 if newTotal is undefined
+      setHasMore(safeSalons.length === pageSize);
       setPage(p);
     } catch (err) {
       if ((err as Error).name === "AbortError") return;
