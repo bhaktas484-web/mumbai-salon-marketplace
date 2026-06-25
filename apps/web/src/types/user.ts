@@ -64,6 +64,7 @@ export interface SignupDTO {
   email: string;
   phone?: string;
   password: string;
+  role?: "customer" | "salon_owner";
 }
 
 export interface AuthResponse {
