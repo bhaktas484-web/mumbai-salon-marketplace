@@ -6,54 +6,42 @@ import Link from "next/link";
 import { Eye, EyeOff, Scissors, Phone } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input }  from "@/components/ui/Input";
+import { useAuthStore } from "@/store/authStore";
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [form, setForm]        = useState({ name:"", email:"", phone:"", password:"" });
+  const router     = useRouter();
+  const signupStore = useAuthStore((s) => s.signup);
+
+  const [form, setForm]        = useState({ name: "", email: "", phone: "", password: "" });
   const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading]  = useState(false);
-  const [error, setError]      = useState<string | null>(null);
+  const [loading,  setLoading]  = useState(false);
+  const [error,    setError]    = useState<string | null>(null);
 
   const set = (k: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      setForm(p => ({ ...p, [k]: e.target.value }));
+      setForm((p) => ({ ...p, [k]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    /* Client-side password hint */
+    if (form.password.length < 8) { setError("Password must be at least 8 characters"); return; }
+    if (!/[A-Z]/.test(form.password)) { setError("Password must contain at least 1 uppercase letter"); return; }
+    if (!/[0-9]/.test(form.password)) { setError("Password must contain at least 1 number"); return; }
+
     setLoading(true);
-
     try {
-      const res = await fetch("/api/auth/signup", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name:     form.name,
-          email:    form.email,
-          password: form.password,
-          phone:    form.phone || undefined,
-          role:     "customer",
-        }),
+      await signupStore({
+        name:     form.name,
+        email:    form.email,
+        password: form.password,
+        phone:    form.phone || undefined,
+        role:     "customer",
       });
-
-      const data = await res.json() as {
-        success: boolean;
-        message?: string;
-        data?: { accessToken: string; user: Record<string, unknown> };
-      };
-
-      if (!res.ok || !data.success) {
-        setError(data.message ?? "Signup failed. Please try again.");
-        return;
-      }
-
-      if (data.data?.accessToken) {
-        localStorage.setItem("accessToken", data.data.accessToken);
-      }
-
       router.push("/");
-    } catch {
-      setError("Network error. Make sure the backend is running.");
+    } catch (err) {
+      setError((err as Error).message ?? "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -64,10 +52,13 @@ export default function SignupPage() {
       {/* ── Left: Form ──────────────────────────────── */}
       <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-16 xl:px-24">
         <Link href="/" className="flex items-center gap-2 mb-12 w-fit">
-          <div className="w-9 h-9 rounded-xl bg-gradient-brand flex items-center justify-center">
-            <Scissors size={18} className="text-black rotate-45" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-black"
+            style={{ background: "var(--gold)" }}>
+            <Scissors size={18} className="rotate-45" />
           </div>
-          <span className="font-display font-bold text-2xl">Glam<span className="text-gradient-gold">r</span></span>
+          <span className="font-display font-bold text-2xl">
+            Glam<span style={{ color: "var(--gold)" }}>r</span>
+          </span>
         </Link>
 
         <div className="max-w-sm w-full">
@@ -91,27 +82,11 @@ export default function SignupPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <Input label="Full Name"        value={form.name}     onChange={set("name")}     placeholder="Priya Shah"           required />
+            <Input label="Email" type="email" value={form.email}  onChange={set("email")}    placeholder="priya@gmail.com"      required autoComplete="email" />
             <Input
-              label="Full Name"
-              value={form.name}
-              onChange={set("name")}
-              placeholder="Priya Shah"
-              required
-            />
-            <Input
-              label="Email"
-              type="email"
-              value={form.email}
-              onChange={set("email")}
-              placeholder="priya@gmail.com"
-              required
-              autoComplete="email"
-            />
-            <Input
-              label="Phone (optional)"
-              type="tel"
-              value={form.phone}
-              onChange={set("phone")}
+              label="Phone (optional)" type="tel"
+              value={form.phone} onChange={set("phone")}
               placeholder="+91 98200 00000"
               leftIcon={<Phone size={15} />}
               hint="For appointment reminders via SMS"
@@ -119,18 +94,16 @@ export default function SignupPage() {
             <Input
               label="Password"
               type={showPass ? "text" : "password"}
-              value={form.password}
-              onChange={set("password")}
-              placeholder="Min. 8 characters"
+              value={form.password} onChange={set("password")}
+              placeholder="Min. 8 chars, 1 uppercase, 1 number"
               required
-              rightIcon={showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
-              onRightIconClick={() => setShowPass(p => !p)}
+              rightIcon={showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+              onRightIconClick={() => setShowPass((p) => !p)}
             />
 
             <p className="text-xs text-ink-muted">
-              By signing up, you agree to our{" "}
-              <Link href="/terms" className="text-brand-400 hover:underline">Terms</Link>
-              {" "}and{" "}
+              By signing up you agree to our{" "}
+              <Link href="/terms" className="text-brand-400 hover:underline">Terms</Link>{" "}and{" "}
               <Link href="/privacy" className="text-brand-400 hover:underline">Privacy Policy</Link>.
             </p>
 
@@ -150,22 +123,22 @@ export default function SignupPage() {
 
       {/* ── Right panel ─────────────────────────────── */}
       <div className="hidden lg:flex flex-1 items-center justify-center bg-surface-card border-l border-surface-border p-16 relative overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-gold" />
+        <div className="absolute inset-0" style={{ background: "var(--mesh-gold, var(--surface-card))" }} />
         <div className="relative z-10 text-center max-w-sm">
           <div className="text-6xl mb-6">💇</div>
           <h2 className="font-display font-black text-3xl mb-4">
-            Your beauty journey <span className="text-gradient-gold">starts here</span>
+            Your beauty journey <span style={{ color: "var(--gold)" }}>starts here</span>
           </h2>
           <p className="text-ink-muted">Discover Mumbai&apos;s finest salons and spas, curated just for you.</p>
           <div className="mt-8 grid grid-cols-2 gap-4">
             {[
-              { label:"1,200+", sub:"Verified Salons" },
-              { label:"4.8★",   sub:"Average Rating" },
-              { label:"50k+",   sub:"Happy Customers" },
-              { label:"Free",   sub:"Cancellation" },
-            ].map(({label,sub}) => (
+              { label: "1,200+", sub: "Verified Salons"  },
+              { label: "4.8★",   sub: "Average Rating"   },
+              { label: "50k+",   sub: "Happy Customers"  },
+              { label: "Free",   sub: "Cancellation"     },
+            ].map(({ label, sub }) => (
               <div key={sub} className="card p-4 text-center">
-                <p className="font-display font-black text-2xl text-brand-400">{label}</p>
+                <p className="font-display font-black text-2xl" style={{ color: "var(--gold)" }}>{label}</p>
                 <p className="text-xs text-ink-muted mt-1">{sub}</p>
               </div>
             ))}
