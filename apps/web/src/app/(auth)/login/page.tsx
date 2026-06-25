@@ -1,38 +1,49 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Eye, EyeOff, Scissors, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Scissors } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input }  from "@/components/ui/Input";
+import { useAuthStore } from "@/store/authStore";
 
 export default function LoginPage() {
-  const [email,     setEmail]     = useState("");
-  const [password,  setPassword]  = useState("");
-  const [showPass,  setShowPass]  = useState(false);
-  const [loading,   setLoading]   = useState(false);
-  const [error,     setError]     = useState("");
+  const router = useRouter();
+  const loginStore = useAuthStore((s) => s.login);
+
+  const [email,    setEmail]    = useState("");
+  const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [loading,  setLoading]  = useState(false);
+  const [error,    setError]    = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1200));
-    setLoading(false);
-    setError("Invalid email or password. Try again.");
+
+    try {
+      await loginStore({ email, password });
+      router.push("/");
+    } catch (err) {
+      setError((err as Error).message ?? "Invalid email or password. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex">
       {/* ── Left: Form ──────────────────────────────── */}
       <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-16 xl:px-24">
-        {/* Logo */}
         <Link href="/" className="flex items-center gap-2 mb-12 w-fit group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-brand flex items-center justify-center">
-            <Scissors size={18} className="text-black rotate-45" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-black"
+            style={{ background: "var(--gold)" }}>
+            <Scissors size={18} className="rotate-45" />
           </div>
           <span className="font-display font-bold text-2xl">
-            Glam<span className="text-gradient-gold">r</span>
+            Glam<span style={{ color: "var(--gold)" }}>r</span>
           </span>
         </Link>
 
@@ -40,10 +51,8 @@ export default function LoginPage() {
           <h1 className="font-display font-black text-3xl mb-2">Welcome back</h1>
           <p className="text-ink-muted mb-8">Sign in to your Glamr account</p>
 
-          {/* Google OAuth */}
-          <button className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-surface-border bg-surface-raised hover:border-surface-muted hover:bg-surface-raised/80 transition-all text-sm font-medium text-ink-secondary mb-6">
-            <GoogleIcon />
-            Continue with Google
+          <button className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-surface-border bg-surface-raised hover:border-surface-muted transition-all text-sm font-medium text-ink-secondary mb-6">
+            <GoogleIcon /> Continue with Google
           </button>
 
           <div className="flex items-center gap-4 mb-6">
@@ -57,7 +66,7 @@ export default function LoginPage() {
               label="Email"
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
               autoComplete="email"
@@ -66,12 +75,12 @@ export default function LoginPage() {
               label="Password"
               type={showPass ? "text" : "password"}
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
               autoComplete="current-password"
               rightIcon={showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-              onRightIconClick={() => setShowPass(p => !p)}
+              onRightIconClick={() => setShowPass((p) => !p)}
             />
 
             {error && (
@@ -106,19 +115,18 @@ export default function LoginPage() {
 
       {/* ── Right: Visual panel ─────────────────────── */}
       <div className="hidden lg:flex flex-1 items-center justify-center bg-surface-card border-l border-surface-border p-16 relative overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-gold" />
+        <div className="absolute inset-0" style={{ background: "var(--mesh-gold, var(--surface-card))" }} />
         <div className="relative z-10 text-center max-w-sm">
           <div className="text-6xl mb-6">✨</div>
           <h2 className="font-display font-black text-3xl mb-4">
             Mumbai&apos;s Best Beauty,{" "}
-            <span className="text-gradient-gold">One Tap Away</span>
+            <span style={{ color: "var(--gold)" }}>One Tap Away</span>
           </h2>
           <p className="text-ink-muted leading-relaxed">
             Book top salons, track your appointments, and discover exclusive deals — all in one place.
           </p>
-
           <div className="mt-10 space-y-3">
-            {["✓  Instant booking confirmation","✓  Free cancellation (2hr notice)","✓  Exclusive member deals"].map(t => (
+            {["✓  Instant booking confirmation", "✓  Free cancellation (2hr notice)", "✓  Exclusive member deals"].map((t) => (
               <p key={t} className="text-sm text-ink-secondary text-left">{t}</p>
             ))}
           </div>
