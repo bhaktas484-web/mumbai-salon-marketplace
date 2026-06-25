@@ -38,7 +38,11 @@ export default function ExplorePage() {
     setFilters({ area, category, tier });
   }, [searchParams]);
 
-  const { salons, isLoading, total, hasMore, fetchNext } = useSalons({ filters, pageSize: 12 });
+  const { salons: rawSalons, isLoading, total, hasMore, fetchNext } = useSalons({ filters, pageSize: 12 });
+
+  // ✅ Safe fallbacks for undefined values from hook
+  const salons = rawSalons ?? [];
+  const safeTotal = total ?? 0;
 
   const activeFilterCount =
     (filters.area?.length ?? 0) +
@@ -91,7 +95,7 @@ export default function ExplorePage() {
                   <input
                     type="checkbox"
                     checked={filters.isOpen ?? false}
-                    onChange={(e) => setFilters((p) => ({ ...p, isOpen: e.target.checked  }))}
+                    onChange={(e) => setFilters((p) => ({ ...p, isOpen: e.target.checked }))}
                     className="w-4 h-4 accent-brand-500"
                   />
                   <span className="text-sm text-ink-secondary">Open now</span>
@@ -131,7 +135,10 @@ export default function ExplorePage() {
                 <div>
                   {isLoading
                     ? <p className="text-sm text-ink-muted">Loading salons…</p>
-                    : <p className="text-sm text-ink-secondary"><span className="font-semibold text-ink-primary">{total.toLocaleString("en-IN")}</span> salons found</p>
+                    : <p className="text-sm text-ink-secondary">
+                        {/* ✅ Fixed: use safeTotal instead of total */}
+                        <span className="font-semibold text-ink-primary">{safeTotal.toLocaleString("en-IN")}</span> salons found
+                      </p>
                   }
                 </div>
 
@@ -139,19 +146,20 @@ export default function ExplorePage() {
                   {/* Sort */}
                   <div className="relative">
                     <select
-                     aria-label="Sort salons"
+                      aria-label="Sort salons"
                       value={filters.sortBy ?? "rating"}
-onChange={(e) =>
-  setFilters((p) => ({
-    ...p,
-    sortBy: e.target.value as
-      | "rating"
-      | "price_asc"
-      | "price_desc"
-      | "distance"
-      | "newest",
-  }))
-}                      className="appearance-none input py-2 pr-8 pl-3 text-sm w-44 cursor-pointer"
+                      onChange={(e) =>
+                        setFilters((p) => ({
+                          ...p,
+                          sortBy: e.target.value as
+                            | "rating"
+                            | "price_asc"
+                            | "price_desc"
+                            | "distance"
+                            | "newest",
+                        }))
+                      }
+                      className="appearance-none input py-2 pr-8 pl-3 text-sm w-44 cursor-pointer"
                     >
                       {SORT_OPTIONS.map((o) => (
                         <option key={o.value} value={o.value}>{o.label}</option>
@@ -194,9 +202,9 @@ onChange={(e) =>
                 <div className="flex flex-wrap gap-2 mb-5">
                   {[...(filters.area ?? []), ...(filters.category ?? []), ...(filters.tier ?? [])].map((f) => (
                     <Badge key={f} variant="gold" className="cursor-pointer gap-2" onClick={() => {
-                      if (AREAS.includes(f as MumbaiArea))        toggleFilter("area", f);
-                      else if (CATEGORIES.includes(f as ServiceCategory)) toggleFilter("category", f);
-                      else if (TIERS.includes(f as SalonTier))   toggleFilter("tier", f);
+                      if (AREAS.includes(f as MumbaiArea))                    toggleFilter("area", f);
+                      else if (CATEGORIES.includes(f as ServiceCategory))     toggleFilter("category", f);
+                      else if (TIERS.includes(f as SalonTier))                toggleFilter("tier", f);
                     }}>
                       {f} <X size={10} />
                     </Badge>
@@ -231,8 +239,9 @@ onChange={(e) =>
                 <div className="text-center mt-8 text-ink-muted text-sm">Loading more…</div>
               )}
               {!hasMore && salons.length > 0 && (
+                // ✅ Fixed: use safeTotal instead of total
                 <p className="text-center mt-10 text-sm text-ink-disabled">
-                  You&apos;ve seen all {total} salons ✓
+                  You&apos;ve seen all {safeTotal} salons ✓
                 </p>
               )}
             </div>
