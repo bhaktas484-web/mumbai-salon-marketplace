@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import type { SalonListing, SalonFilters, PaginatedSalons } from "@/types/salon";
+import type { SalonListing, SalonFilters } from "@/types/salon";
 
 interface UseSalonsOptions {
   filters?:  SalonFilters;
@@ -10,31 +10,42 @@ interface UseSalonsOptions {
 }
 
 interface UseSalonsResult {
-  salons:     SalonListing[];
-  isLoading:  boolean;
-  isError:    boolean;
-  errorMsg:   string | null;
-  hasMore:    boolean;
-  total:      number;
-  page:       number;
-  fetchNext:  () => void;
-  refetch:    () => void;
-  reset:      () => void;
+  salons:    SalonListing[];
+  isLoading: boolean;
+  isError:   boolean;
+  errorMsg:  string | null;
+  hasMore:   boolean;
+  total:     number;
+  page:      number;
+  fetchNext: () => void;
+  refetch:   () => void;
+  reset:     () => void;
 }
 
 function buildQueryString(filters: SalonFilters, page: number, pageSize: number): string {
   const params = new URLSearchParams();
-  params.set("page", String(page));
+  params.set("page",     String(page));
   params.set("pageSize", String(pageSize));
   if (filters.area?.length)     filters.area.forEach((a) => params.append("area", a));
   if (filters.category?.length) filters.category.forEach((c) => params.append("category", c));
-  if (filters.gender)           params.set("gender", filters.gender);
+  if (filters.gender)           params.set("gender",    filters.gender);
   if (filters.tier?.length)     filters.tier.forEach((t) => params.append("tier", t));
   if (filters.minRating)        params.set("minRating", String(filters.minRating));
-  if (filters.maxPrice)         params.set("maxPrice", String(filters.maxPrice));
-  if (filters.isOpen)           params.set("isOpen", "true");
-  if (filters.sortBy)           params.set("sortBy", filters.sortBy);
+  if (filters.maxPrice)         params.set("maxPrice",  String(filters.maxPrice));
+  if (filters.isOpen)           params.set("isOpen",    "true");
+  if (filters.sortBy)           params.set("sortBy",    filters.sortBy);
   return params.toString();
+}
+
+interface ApiSalonsResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    salons:   SalonListing[];
+    total:    number;
+    page:     number;
+    pageSize: number;
+  };
 }
 
 export function useSalons({
@@ -50,7 +61,7 @@ export function useSalons({
   const [hasMore,   setHasMore]   = useState(true);
   const [total,     setTotal]     = useState(0);
 
-  const abortRef  = useRef<AbortController | null>(null);
+  const abortRef   = useRef<AbortController | null>(null);
   const filtersKey = JSON.stringify(filters);
 
   const fetchPage = useCallback(async (p: number, append: boolean) => {
@@ -66,11 +77,14 @@ export function useSalons({
       const qs  = buildQueryString(filters, p, pageSize);
       const res = await fetch(`/api/salons?${qs}`, { signal: abortRef.current.signal });
       if (!res.ok) throw new Error(`API error ${res.status}`);
-      const data: PaginatedSalons = await res.json();
 
-      setSalons((prev) => (append ? [...prev, ...data.salons] : data.salons));
-      setTotal(data.total);
-      setHasMore(data.hasMore);
+      const json: ApiSalonsResponse = await res.json();
+      if (!json.success || !json.data) throw new Error(json.message ?? "Failed to load salons");
+
+      const { salons: newSalons, total: newTotal } = json.data;
+      setSalons((prev) => (append ? [...prev, ...newSalons] : newSalons));
+      setTotal(newTotal);
+      setHasMore(newSalons.length === pageSize);
       setPage(p);
     } catch (err) {
       if ((err as Error).name === "AbortError") return;
@@ -82,7 +96,6 @@ export function useSalons({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtersKey, pageSize, enabled]);
 
-  /* Reset & fetch on filter change */
   useEffect(() => {
     setSalons([]);
     setPage(1);
