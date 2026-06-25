@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X, MapPin, ChevronDown, Scissors } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X, MapPin, ChevronDown, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/authStore";
 
 const NAV_LINKS = [
   { label: "Explore",  href: "/explore" },
@@ -17,6 +18,9 @@ export function Navbar() {
   const [scrolled,   setScrolled]   = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const router   = useRouter();
+
+  const { isAuthenticated, user, logout } = useAuthStore();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -25,6 +29,11 @@ export function Navbar() {
   }, []);
 
   useEffect(() => { setMobileOpen(false); }, [pathname]);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+  };
 
   return (
     <>
@@ -51,10 +60,11 @@ export function Navbar() {
           </Link>
 
           {/* Location pill */}
-          <button className={cn(
-            "hidden md:flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all duration-150",
-            "border bg-surface-3 hover:border-gold"
-          )}
+          <button
+            className={cn(
+              "hidden md:flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all duration-150",
+              "border bg-surface-3 hover:border-gold"
+            )}
             style={{ borderColor: "var(--border-2)", color: "var(--text-2)" }}
           >
             <MapPin size={13} style={{ color: "var(--gold)" }} />
@@ -75,7 +85,7 @@ export function Navbar() {
                     : "text-ink-2 hover:text-ink-1 hover:bg-surface-3"
                 )}
                 style={{
-                  color: pathname === link.href ? "var(--gold)" : undefined,
+                  color:      pathname === link.href ? "var(--gold)" : undefined,
                   background: pathname === link.href ? "var(--gold-dim)" : undefined,
                 }}
               >
@@ -86,20 +96,53 @@ export function Navbar() {
 
           {/* Right */}
           <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="hidden md:flex items-center px-4 py-[7px] rounded-lg text-sm font-medium border transition-all duration-150 hover:border-gold"
-              style={{ color: "var(--text-2)", borderColor: "var(--border-2)" }}
-            >
-              Log in
-            </Link>
-            <Link
-              href="/signup"
-              className="hidden md:flex items-center px-[18px] py-[7px] rounded-lg text-sm font-semibold text-black transition-all hover:brightness-110"
-              style={{ background: "var(--gold)" }}
-            >
-              Sign up free
-            </Link>
+            {isAuthenticated && user ? (
+              <>
+                {/* Greeting */}
+                <span
+                  className="hidden md:block text-sm font-medium"
+                  style={{ color: "var(--text-2)" }}
+                >
+                  Hi, {user.name.split(" ")[0]}
+                </span>
+
+                {/* Profile */}
+                <Link
+                  href="/profile"
+                  className="hidden md:flex items-center gap-1.5 px-4 py-[7px] rounded-lg text-sm font-medium border transition-all duration-150 hover:border-gold"
+                  style={{ color: "var(--text-2)", borderColor: "var(--border-2)" }}
+                >
+                  <User size={14} />
+                  Profile
+                </Link>
+
+                {/* Logout */}
+                <button
+                  onClick={handleLogout}
+                  className="hidden md:flex items-center px-[18px] py-[7px] rounded-lg text-sm font-semibold text-black transition-all hover:brightness-110"
+                  style={{ background: "var(--gold)" }}
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="hidden md:flex items-center px-4 py-[7px] rounded-lg text-sm font-medium border transition-all duration-150 hover:border-gold"
+                  style={{ color: "var(--text-2)", borderColor: "var(--border-2)" }}
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="hidden md:flex items-center px-[18px] py-[7px] rounded-lg text-sm font-semibold text-black transition-all hover:brightness-110"
+                  style={{ background: "var(--gold)" }}
+                >
+                  Sign up free
+                </Link>
+              </>
+            )}
 
             {/* Mobile hamburger */}
             <button
@@ -142,8 +185,24 @@ export function Navbar() {
             ))}
             <div className="divider" />
             <div className="flex flex-col gap-2">
-              <Link href="/login" className="btn btn-outline btn-md w-full text-center">Log in</Link>
-              <Link href="/signup" className="btn btn-gold btn-md w-full text-center">Sign up free</Link>
+              {isAuthenticated && user ? (
+                <>
+                  <Link href="/profile" className="btn btn-outline btn-md w-full text-center">
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="btn btn-gold btn-md w-full text-center"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login"  className="btn btn-outline btn-md w-full text-center">Log in</Link>
+                  <Link href="/signup" className="btn btn-gold btn-md w-full text-center">Sign up free</Link>
+                </>
+              )}
             </div>
           </div>
         </div>
